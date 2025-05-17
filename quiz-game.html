@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>เกมตอบคำถาม</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .choices button, .choices input[type="text"] {
+      display: block;
+      margin: 5px 0;
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+    }
+    #submit-btn {
+      margin-top: 10px;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ตอบคำถามให้ครบ 7 ข้อ จะได้คำใบ้เพิ่ม</h1>
+  <div class="question" id="question">กำลังโหลดคำถาม...</div>
+  <div class="choices" id="choices"></div>
+  <p id="result"></p>
+
+  <script>
+    const questions = [
+      {
+        q: "1. เมืองหลวงของประเทศไทยคือ?",
+        choices: ["เชียงใหม่", "ขอนแก่น", "กรุงเทพฯ", "ภูเก็ต"],
+        answer: "กรุงเทพฯ"
+      },
+      {
+        q: "2. ประเทศไทยมีกี่จังหวัด?",
+        choices: ["75", "76", "77", "78"],
+        answer: "77"
+      },
+      {
+        q: "3. แอลโลบิกบล็อคมีกี่ช่วงท่าและมีกี่จังหวะ?",
+        choices: [
+          "4ช่วงท่า12หรือ24จังหวะ",
+          "มี4ช่วงท่า6หรือ32จังหวะ",
+          "มี4ช่วงท่ามี2หรือ10จังหวะ",
+          "มี4ช่วงท่า8หรือ32จังหวะ"
+        ],
+        answer: "มี4ช่วงท่า8หรือ32จังหวะ"
+      },
+      {
+        q: "4. ครูธนกฤตมีฉายาว่าอะไร?",
+        choices: ["นกกรงหัวจุก", "นกหัวควาน", "นกยาง", "ถูกทุกข้อ"],
+        answer: "นกกรงหัวจุก"
+      },
+      {
+        q: "5. กีฬาเทอมแรกเรียนอะไร? (พิมพ์อะไรก็ได้)",
+        input: true,
+        skipValidation: true // <== ใช้ตรงนี้เพื่อให้ไม่ตรวจว่าถูกไหม
+      },
+      {
+        q: "6. ม.5/11 มีเด็กในห้องกี่คน?",
+        choices: ["39", "39แต่เพิ่มมา1", "มี38แต่เพิ่มมา2", "ผิดทุกข้อ"],
+        answer: "39แต่เพิ่มมา1"
+      },
+      {
+        q: "7. คิดว่าตัวเองเป็นคนยังไง? (ข้อสุดท้ายแล้ว)",
+        choices: [
+          "เป็นคนฉลาด",
+          "เป็นคนหล่อ/สวย",
+          "เป็นลูกธนกฤต",
+          "เป็นอะไรก็ได้เป็นคนดีก็พอแล้ว"
+        ],
+        answer: "เป็นอะไรก็ได้เป็นคนดีก็พอแล้ว"
+      }
+    ];
+
+    let currentQuestion = 0;
+
+    function showQuestion() {
+      document.getElementById("result").textContent = "";
+      const q = questions[currentQuestion];
+      document.getElementById("question").textContent = q.q;
+
+      const choicesDiv = document.getElementById("choices");
+      choicesDiv.innerHTML = "";
+
+      if (q.input) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = "textAnswer";
+        choicesDiv.appendChild(input);
+
+        const btn = document.createElement("button");
+        btn.textContent = "ส่งคำตอบ";
+        btn.id = "submit-btn";
+        btn.onclick = () => {
+          if (q.skipValidation) {
+            document.getElementById("result").textContent = "✅ ผ่านไปเลยพี่ก็ไม่รู้เหมือนกัน";
+            document.getElementById("result").style.color = "green";
+            setTimeout(() => {
+              currentQuestion++;
+              showQuestion();
+            }, 1500);
+          } else {
+            checkAnswer(input.value.trim());
+          }
+        };
+        choicesDiv.appendChild(btn);
+      } else {
+        q.choices.forEach(choice => {
+          const btn = document.createElement("button");
+          btn.textContent = choice;
+          btn.onclick = () => checkAnswer(choice);
+          choicesDiv.appendChild(btn);
+        });
+      }
+    }
+
+    function checkAnswer(selected) {
+      if (selected === questions[currentQuestion].answer) {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          showQuestion();
+        } else {
+          document.getElementById("question").textContent = "🎉 ยินดีด้วย! คุณตอบถูกครบทุกข้อแล้ว!";
+          document.getElementById("choices").innerHTML = "ig eiei.najaaaa ทักมาจะได้คำใบ้เพิ่ม";
+        }
+      } else {
+        document.getElementById("result").textContent = "❌ ผิดจ้า! กลับไปเริ่มใหม่ที่ข้อ 1";
+        document.getElementById("result").style.color = "red";
+        currentQuestion = 0;
+        setTimeout(showQuestion, 1500);
+      }
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
